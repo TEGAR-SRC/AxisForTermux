@@ -2,11 +2,17 @@
 
 class ApiCrypto
 {
+    private static $decrypt_cache = [];
+    private static $encrypt_cache = [];
+
     function cHeader_POST($request)
     {
+        static $url_decrypt = null;
         $ch = curl_init();
-        $url_encrypt = openssl_decrypt("9Dak7fa1LE2kNF62YztSo2AZzhNMqhm5qtMpR0/nrL0mYV6b4NK93Yt/DMGyd+T96Lo=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-        curl_setopt($ch, CURLOPT_URL,sprintf($url_encrypt,$request));
+        if ($url_decrypt === null) {
+            $url_decrypt = openssl_decrypt("9Dak7fa1LE2kNF62YztSo2AZzhNMqhm5qtMpR0/nrL0mYV6b4NK93Yt/DMGyd+T96Lo=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+        }
+        curl_setopt($ch, CURLOPT_URL,sprintf($url_decrypt,$request));
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt ($ch, CURLOPT_ENCODING, "gzip");
@@ -25,6 +31,9 @@ class ApiCrypto
 
     function encrypt($data)
     {
+        if (isset(self::$encrypt_cache[$data])) {
+            return self::$encrypt_cache[$data];
+        }
         $json_enc = json_decode($this->Api_Encrypt($data), true);
         $enc_data = openssl_decrypt("+COk/A==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
         $data_enc = $json_enc[$enc_data];
@@ -32,9 +41,9 @@ class ApiCrypto
         $json_data_enc = json_decode($decrypt_data_enc, true);
         $enc_decrypt_3des = openssl_decrypt("+Cez7/z/dz32IFL2","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
         $decrypt_3des = $json_data_enc[$enc_decrypt_3des];
-        return $decrypt_3des;
+        return self::$encrypt_cache[$data] = $decrypt_3des;
     }
-    
+
     function Api_Decrypt($data)
     {
         $dec = openssl_decrypt("+Cez7/z/dz32IFL2","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
@@ -44,6 +53,9 @@ class ApiCrypto
 
     function decrypt($data)
     {
+        if (isset(self::$decrypt_cache[$data])) {
+            return self::$decrypt_cache[$data];
+        }
         $json_dec = json_decode($this->Api_Decrypt($data), true);
         $enc_data = openssl_decrypt("+COk/A==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
         $data_dec = $json_dec[$enc_data];
@@ -51,7 +63,7 @@ class ApiCrypto
         $json_data_dec = json_decode($decrypt_data_dec, true);
         $enc_encrypt_3des = openssl_decrypt("+Syz7/z/dz32IFL2","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
         $encrypt_3des = $json_data_dec[$enc_encrypt_3des];
-        return $encrypt_3des;
+        return self::$decrypt_cache[$data] = $encrypt_3des;
     }
 }
 
@@ -59,11 +71,15 @@ class ApiAXIS
 {
     function cHeader_POST($request)
     {
+        static $url_decrypt = null;
         $crypto = new ApiCrypto;
         $ch = curl_init();
 
-        $url_encrypt = "U2H4FivA7_TARK4rDYw240Z35aNAvZ3QpxHTMjbk7580oUAou599G8oqqkcrd6ht2SVW64mjyH4HsaF4ukoLlw==";
-        curl_setopt($ch, CURLOPT_URL,sprintf($crypto->decrypt($url_encrypt),$request));
+        if ($url_decrypt === null) {
+            $url_encrypt = "U2H4FivA7_TARK4rDYw240Z35aNAvZ3QpxHTMjbk7580oUAou599G8oqqkcrd6ht2SVW64mjyH4HsaF4ukoLlw==";
+            $url_decrypt = $crypto->decrypt($url_encrypt);
+        }
+        curl_setopt($ch, CURLOPT_URL,sprintf($url_decrypt,$request));
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt ($ch, CURLOPT_ENCODING, "gzip");
@@ -98,10 +114,10 @@ class ApiAXIS
     function Result_BuyPackage_v2($token,$pkgid_buy_v2)
     {
         $Red      = "\e[0;31m";
-        $Green  = "\e[0;32m"; 
-        $result_buy_v2 = $this->BuyPackage_v2($token,$pkgid_buy_v2);   
+        $Green  = "\e[0;32m";
+        $result_buy_v2 = $this->BuyPackage_v2($token,$pkgid_buy_v2);
         $json_buy_v2 = json_decode($result_buy_v2, true);
-        
+
         $enc_status_buy_v2 = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
         $status_buy_v2 = $json_buy_v2[$enc_status_buy_v2];
         $enc_msg_buy_v2 = openssl_decrypt("8Sej7uToZg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
@@ -125,8 +141,8 @@ class ApiAXIS
     function Result_BuyPackage_v3($token,$pkgid_buy_v2)
     {
         $Red      = "\e[0;31m";
-        $Green  = "\e[0;32m"; 
-        $result_buy_v3 = $this->BuyPackage_v3($token,$pkgid_buy_v2);   
+        $Green  = "\e[0;32m";
+        $result_buy_v3 = $this->BuyPackage_v3($token,$pkgid_buy_v2);
         $json_buy_v3 = json_decode($result_buy_v3, true);
         $enc_status_buy_v3 = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
         $status_buy_v3 = $json_buy_v3[$enc_status_buy_v3];
@@ -139,7 +155,7 @@ class ApiAXIS
         }else{
             echo "$Red ➤ $message_buy_v3 !\n";
         }
-    }  
+    }
 }
 
 $Red      = "\e[0;31m";
@@ -185,7 +201,7 @@ repeat_token:
 $input_otp = openssl_decrypt("1Syg6PGvTDaVfg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
 echo "$White $input_otp ";
 $otp = strtoupper(trim(fgets(STDIN)));
-$result_login = $axis->LoginOTP($nomor, $otp);   
+$result_login = $axis->LoginOTP($nomor, $otp);
 $json_login = json_decode($result_login, true);
 $enc_status_login = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
 $status_login = $json_login[$enc_status_login];
@@ -213,14 +229,14 @@ repeat_buy:
 echo "\n";
 function DoublePacket($token,$pkgid)
 {
-    $axis = new ApiAxis;
+    $axis = new ApiAXIS;
     $axis->Result_BuyPackage_v2($token,$pkgid);
     $axis->Result_BuyPackage_v3($token,$pkgid);
 }
 function getBuyPackage()
 {
     $crypto = new ApiCrypto;
-    $axis = new ApiAxis;
+    $axis = new ApiAXIS;
     $Red      = "\e[0;31m";
     $Yellow = "\e[0;33m";
     $White  = "\e[0;37m";
@@ -238,19 +254,19 @@ function getBuyPackage()
     $list=array($one,$two,$three,$four,$five,$six);
     foreach($list as $lists){
         echo "$Yellow $lists \n";
-    }    
+    }
     repeat_pkgid:
-    
+
     $cho = openssl_decrypt("3yq/9PbqIymwK0PkJxZA/2Ed0kY=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
     echo "\n$Cyan $cho ";
     $choise = trim(fgets(STDIN));
     if(!($choise==1||$choise==2||$choise==3||$choise==4||$choise==5||$choise==6))
     {
         $kec_cho = openssl_decrypt("xS2l76Xsaw2sJ1Klbi0B+noT0hs=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-        echo "$Red ➤ $kec_cho \n"; 
+        echo "$Red ➤ $kec_cho \n";
         goto repeat_pkgid;
     }
-        
+
     echo "\n";
     switch($choise){
         case '1' :
