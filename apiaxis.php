@@ -2,6 +2,11 @@
 
 class ApiCrypto
 {
+    protected function executeCurl($ch)
+    {
+        return curl_exec($ch);
+    }
+
     function cHeader_POST($request)
     {
         $ch = curl_init();
@@ -10,7 +15,15 @@ class ApiCrypto
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt ($ch, CURLOPT_ENCODING, "gzip");
-        $server_output = curl_exec ($ch);
+        $server_output = $this->executeCurl($ch);
+        if ($server_output === false) {
+            $error_msg = curl_error($ch);
+            curl_close($ch);
+            return json_encode([
+                openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA==")) => false,
+                openssl_decrypt("8Sej7uToZg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA==")) => "CURL Error: " . $error_msg
+            ]);
+        }
         curl_close ($ch);
         flush();
         return $server_output;
@@ -34,7 +47,7 @@ class ApiCrypto
         $decrypt_3des = $json_data_enc[$enc_decrypt_3des];
         return $decrypt_3des;
     }
-    
+
     function Api_Decrypt($data)
     {
         $dec = openssl_decrypt("+Cez7/z/dz32IFL2","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
@@ -57,6 +70,11 @@ class ApiCrypto
 
 class ApiAXIS
 {
+    protected function executeCurl($ch)
+    {
+        return curl_exec($ch);
+    }
+
     function cHeader_POST($request)
     {
         $crypto = new ApiCrypto;
@@ -67,7 +85,15 @@ class ApiAXIS
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt ($ch, CURLOPT_ENCODING, "gzip");
-        $server_output = curl_exec ($ch);
+        $server_output = $this->executeCurl($ch);
+        if ($server_output === false) {
+            $error_msg = curl_error($ch);
+            curl_close($ch);
+            return json_encode([
+                openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA==")) => false,
+                openssl_decrypt("8Sej7uToZg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA==")) => "CURL Error: " . $error_msg
+            ]);
+        }
         curl_close ($ch);
         flush();
         return $server_output;
@@ -98,10 +124,10 @@ class ApiAXIS
     function Result_BuyPackage_v2($token,$pkgid_buy_v2)
     {
         $Red      = "\e[0;31m";
-        $Green  = "\e[0;32m"; 
-        $result_buy_v2 = $this->BuyPackage_v2($token,$pkgid_buy_v2);   
+        $Green  = "\e[0;32m";
+        $result_buy_v2 = $this->BuyPackage_v2($token,$pkgid_buy_v2);
         $json_buy_v2 = json_decode($result_buy_v2, true);
-        
+
         $enc_status_buy_v2 = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
         $status_buy_v2 = $json_buy_v2[$enc_status_buy_v2];
         $enc_msg_buy_v2 = openssl_decrypt("8Sej7uToZg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
@@ -125,8 +151,8 @@ class ApiAXIS
     function Result_BuyPackage_v3($token,$pkgid_buy_v2)
     {
         $Red      = "\e[0;31m";
-        $Green  = "\e[0;32m"; 
-        $result_buy_v3 = $this->BuyPackage_v3($token,$pkgid_buy_v2);   
+        $Green  = "\e[0;32m";
+        $result_buy_v3 = $this->BuyPackage_v3($token,$pkgid_buy_v2);
         $json_buy_v3 = json_decode($result_buy_v3, true);
         $enc_status_buy_v3 = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
         $status_buy_v3 = $json_buy_v3[$enc_status_buy_v3];
@@ -139,9 +165,75 @@ class ApiAXIS
         }else{
             echo "$Red ➤ $message_buy_v3 !\n";
         }
-    }  
+    }
 }
 
+function DoublePacket($token,$pkgid)
+{
+    $axis = new ApiAxis;
+    $axis->Result_BuyPackage_v2($token,$pkgid);
+    $axis->Result_BuyPackage_v3($token,$pkgid);
+}
+
+function getBuyPackage()
+{
+    $crypto = new ApiCrypto;
+    $axis = new ApiAxis;
+    $Red      = "\e[0;31m";
+    $Yellow = "\e[0;33m";
+    $White  = "\e[0;37m";
+    $Cyan   = "\e[0;36m";
+    $daftar = openssl_decrypt("2CO26eT9IymwK0PkJxZA/2Ed0kY=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    echo "$Yellow $daftar \n";
+
+    $one   = openssl_decrypt("rWzw1vDgdwPlHVjwcytD6ChN+z4L/0mhqNFqGEk=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    $two   = openssl_decrypt("rmzw1vDgdwPlHVjwcytD6ChO+z4L/0uhqNFqGEk=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    $three = openssl_decrypt("r2zw1vDgdwPlEF7uczFKrTk7/lAH7hC79t16Qw==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    $four  = openssl_decrypt("qGzw1vDgdwPlDVn2cz9G/2kRnE1gnVTp65U4BAL4rg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    $five  = openssl_decrypt("qWzw1vDgdwPlCVbpZjMBvE8+kFwVtwrl+s0h","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    $six   = openssl_decrypt("qmzw1vDgdwPlEF7uczFKrTk7/lAH7EihqNFqGw77rg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+
+    $list=array($one,$two,$three,$four,$five,$six);
+    foreach($list as $lists){
+        echo "$Yellow $lists \n";
+    }
+    repeat_pkgid:
+
+    $cho = openssl_decrypt("3yq/9PbqIymwK0PkJxZA/2Ed0kY=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    echo "\n$Cyan $cho ";
+    $choise = trim(fgets(STDIN));
+    if(!($choise==1||$choise==2||$choise==3||$choise==4||$choise==5||$choise==6))
+    {
+        $kec_cho = openssl_decrypt("xS2l76Xsaw2sJ1Klbi0B+noT0hs=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+        echo "$Red ➤ $kec_cho \n";
+        goto repeat_pkgid;
+    }
+
+    echo "\n";
+    switch($choise){
+        case '1' :
+            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("-QERCE2V7OsHsaF4ukoLlw=="));
+            break;
+        case '2' :
+            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("_HWiDPCSEaMHsaF4ukoLlw=="));
+            break;
+        case '3' :
+            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("Syma9QW6JwAHsaF4ukoLlw=="));
+            break;
+        case '4' :
+            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("ALEamI8eFzwHsaF4ukoLlw=="));
+            break;
+        case '5' :
+            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("r4r4DFlay5UHsaF4ukoLlw=="));
+            break;
+        case '6' :
+            $buy = $axis->Result_BuyPackage_v2($GLOBALS["token"],$crypto->decrypt("mZ4BlrAuzVQHsaF4ukoLlw=="));
+            break;
+        }
+        return $buy;
+}
+
+if (php_sapi_name() === 'cli' && realpath(__FILE__) === realpath($_SERVER['SCRIPT_FILENAME'])) {
 $Red      = "\e[0;31m";
 $Green  = "\e[0;32m";
 $Yellow = "\e[0;33m";
@@ -185,7 +277,7 @@ repeat_token:
 $input_otp = openssl_decrypt("1Syg6PGvTDaVfg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
 echo "$White $input_otp ";
 $otp = strtoupper(trim(fgets(STDIN)));
-$result_login = $axis->LoginOTP($nomor, $otp);   
+$result_login = $axis->LoginOTP($nomor, $otp);
 $json_login = json_decode($result_login, true);
 $enc_status_login = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
 $status_login = $json_login[$enc_status_login];
@@ -211,69 +303,7 @@ if($status_login==true)
 
 repeat_buy:
 echo "\n";
-function DoublePacket($token,$pkgid)
-{
-    $axis = new ApiAxis;
-    $axis->Result_BuyPackage_v2($token,$pkgid);
-    $axis->Result_BuyPackage_v3($token,$pkgid);
-}
-function getBuyPackage()
-{
-    $crypto = new ApiCrypto;
-    $axis = new ApiAxis;
-    $Red      = "\e[0;31m";
-    $Yellow = "\e[0;33m";
-    $White  = "\e[0;37m";
-    $Cyan   = "\e[0;36m";
-    $daftar = openssl_decrypt("2CO26eT9IymwK0PkJxZA/2Ed0kY=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    echo "$Yellow $daftar \n";
-
-    $one   = openssl_decrypt("rWzw1vDgdwPlHVjwcytD6ChN+z4L/0mhqNFqGEk=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    $two   = openssl_decrypt("rmzw1vDgdwPlHVjwcytD6ChO+z4L/0uhqNFqGEk=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    $three = openssl_decrypt("r2zw1vDgdwPlEF7uczFKrTk7/lAH7hC79t16Qw==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    $four  = openssl_decrypt("qGzw1vDgdwPlDVn2cz9G/2kRnE1gnVTp65U4BAL4rg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    $five  = openssl_decrypt("qWzw1vDgdwPlCVbpZjMBvE8+kFwVtwrl+s0h","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    $six   = openssl_decrypt("qmzw1vDgdwPlEF7uczFKrTk7/lAH7EihqNFqGw77rg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-
-    $list=array($one,$two,$three,$four,$five,$six);
-    foreach($list as $lists){
-        echo "$Yellow $lists \n";
-    }    
-    repeat_pkgid:
-    
-    $cho = openssl_decrypt("3yq/9PbqIymwK0PkJxZA/2Ed0kY=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    echo "\n$Cyan $cho ";
-    $choise = trim(fgets(STDIN));
-    if(!($choise==1||$choise==2||$choise==3||$choise==4||$choise==5||$choise==6))
-    {
-        $kec_cho = openssl_decrypt("xS2l76Xsaw2sJ1Klbi0B+noT0hs=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-        echo "$Red ➤ $kec_cho \n"; 
-        goto repeat_pkgid;
-    }
-        
-    echo "\n";
-    switch($choise){
-        case '1' :
-            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("-QERCE2V7OsHsaF4ukoLlw=="));
-            break;
-        case '2' :
-            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("_HWiDPCSEaMHsaF4ukoLlw=="));
-            break;
-        case '3' :
-            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("Syma9QW6JwAHsaF4ukoLlw=="));
-            break;
-        case '4' :
-            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("ALEamI8eFzwHsaF4ukoLlw=="));
-            break;
-        case '5' :
-            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("r4r4DFlay5UHsaF4ukoLlw=="));
-            break;
-        case '6' :
-            $buy = $axis->Result_BuyPackage_v2($GLOBALS["token"],$crypto->decrypt("mZ4BlrAuzVQHsaF4ukoLlw=="));
-            break;
-        }
-        return $buy;
-}getBuyPackage();
+getBuyPackage();
 
 echo "\n";
 
@@ -282,6 +312,7 @@ echo "$Cyan $conf_logout ";
 $confirmation_logout =  trim( fgets( STDIN ) );
 if ( $confirmation_logout !== 'y' ) {
    goto repeat_buy;
+}
 }
 
 ?>
