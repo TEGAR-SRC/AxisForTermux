@@ -70,6 +70,13 @@ class ApiCrypto
 
 class ApiAXIS
 {
+    private $crypto;
+
+    public function __construct()
+    {
+        $this->crypto = new ApiCrypto;
+    }
+
     protected function executeCurl($ch)
     {
         return curl_exec($ch);
@@ -77,11 +84,10 @@ class ApiAXIS
 
     function cHeader_POST($request)
     {
-        $crypto = new ApiCrypto;
         $ch = curl_init();
 
         $url_encrypt = "U2H4FivA7_TARK4rDYw240Z35aNAvZ3QpxHTMjbk7580oUAou599G8oqqkcrd6ht2SVW64mjyH4HsaF4ukoLlw==";
-        curl_setopt($ch, CURLOPT_URL,sprintf($crypto->decrypt($url_encrypt),$request));
+        curl_setopt($ch, CURLOPT_URL,sprintf($this->crypto->decrypt($url_encrypt),$request));
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt ($ch, CURLOPT_ENCODING, "gzip");
@@ -102,22 +108,19 @@ class ApiAXIS
 
     function SendOTP($msisdn_otp)
     {
-        $crypto = new ApiCrypto;
-        $query = sprintf($crypto->decrypt("i6e1zC-7idX87EGlntu3L9X_eMfg967OB7GheLpKC5c="),$msisdn_otp);
+        $query = sprintf($this->crypto->decrypt("i6e1zC-7idX87EGlntu3L9X_eMfg967OB7GheLpKC5c="),$msisdn_otp);
         return $this->cHeader_POST(base64_encode($query));
     }
 
     function LoginOTP($msisdn_login,$otp)
     {
-        $crypto = new ApiCrypto;
-        $query = sprintf($crypto->decrypt("i6e1zC-7idWv-p77rRCAfmdjCgYaVaZsbhSgkTfJums="),$msisdn_login,$otp);
+        $query = sprintf($this->crypto->decrypt("i6e1zC-7idWv-p77rRCAfmdjCgYaVaZsbhSgkTfJums="),$msisdn_login,$otp);
         return $this->cHeader_POST(base64_encode($query));
     }
 
     function BuyPackage_v2($token,$pkgid_buy_v2)
     {
-        $crypto = new ApiCrypto;
-        $query = sprintf($crypto->decrypt("s0ssqLS--5zrnuDLbU0vlC7roo5Xqq3DDj1g2-SNov_7e61lkUHsOQexoXi6SguX"),$token,$crypto->encrypt($pkgid_buy_v2));
+        $query = sprintf($this->crypto->decrypt("s0ssqLS--5zrnuDLbU0vlC7roo5Xqq3DDj1g2-SNov_7e61lkUHsOQexoXi6SguX"),$token,$this->crypto->encrypt($pkgid_buy_v2));
         return $this->cHeader_POST(base64_encode($query));
     }
 
@@ -143,8 +146,7 @@ class ApiAXIS
 
     function BuyPackage_v3($token,$pkgid_buy_v3)
     {
-        $crypto = new ApiCrypto;
-        $query = sprintf($crypto->decrypt("s0ssqLS--5zrnuDLbU0vlC7roo5Xqq3DwywGtTfyxxv7e61lkUHsOQexoXi6SguX"),$token,$crypto->encrypt($pkgid_buy_v3));
+        $query = sprintf($this->crypto->decrypt("s0ssqLS--5zrnuDLbU0vlC7roo5Xqq3DwywGtTfyxxv7e61lkUHsOQexoXi6SguX"),$token,$this->crypto->encrypt($pkgid_buy_v3));
         return $this->cHeader_POST(base64_encode($query));
     }
 
