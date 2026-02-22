@@ -10,10 +10,15 @@ class ApiCrypto
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt ($ch, CURLOPT_ENCODING, "gzip");
-        $server_output = curl_exec ($ch);
+        $server_output = $this->executeCurl($ch);
         curl_close ($ch);
         flush();
         return $server_output;
+    }
+
+    protected function executeCurl($ch)
+    {
+        return curl_exec($ch);
     }
 
     function Api_Encrypt($data)
@@ -34,7 +39,7 @@ class ApiCrypto
         $decrypt_3des = $json_data_enc[$enc_decrypt_3des];
         return $decrypt_3des;
     }
-    
+
     function Api_Decrypt($data)
     {
         $dec = openssl_decrypt("+Cez7/z/dz32IFL2","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
@@ -98,10 +103,10 @@ class ApiAXIS
     function Result_BuyPackage_v2($token,$pkgid_buy_v2)
     {
         $Red      = "\e[0;31m";
-        $Green  = "\e[0;32m"; 
-        $result_buy_v2 = $this->BuyPackage_v2($token,$pkgid_buy_v2);   
+        $Green  = "\e[0;32m";
+        $result_buy_v2 = $this->BuyPackage_v2($token,$pkgid_buy_v2);
         $json_buy_v2 = json_decode($result_buy_v2, true);
-        
+
         $enc_status_buy_v2 = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
         $status_buy_v2 = $json_buy_v2[$enc_status_buy_v2];
         $enc_msg_buy_v2 = openssl_decrypt("8Sej7uToZg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
@@ -125,8 +130,8 @@ class ApiAXIS
     function Result_BuyPackage_v3($token,$pkgid_buy_v2)
     {
         $Red      = "\e[0;31m";
-        $Green  = "\e[0;32m"; 
-        $result_buy_v3 = $this->BuyPackage_v3($token,$pkgid_buy_v2);   
+        $Green  = "\e[0;32m";
+        $result_buy_v3 = $this->BuyPackage_v3($token,$pkgid_buy_v2);
         $json_buy_v3 = json_decode($result_buy_v3, true);
         $enc_status_buy_v3 = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
         $status_buy_v3 = $json_buy_v3[$enc_status_buy_v3];
@@ -139,88 +144,20 @@ class ApiAXIS
         }else{
             echo "$Red ➤ $message_buy_v3 !\n";
         }
-    }  
+    }
 }
 
-$Red      = "\e[0;31m";
-$Green  = "\e[0;32m";
-$Yellow = "\e[0;33m";
-$Orange = "\e[1;33m";
-$Purple = "\e[0;35m";
-$Cyan   = "\e[0;36m";
-$White  = "\e[0;37m";
-
-echo "\n";
-$welcome = openssl_decrypt("3Tq57sPgcTagNlrwf35j9CgwxT9IhwI=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-echo "$Orange $welcome \n";
-
-echo "\n";
-$login = openssl_decrypt("0C239OuvQhqsNxmrKQ==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-echo "$Purple $login \n";
-
-$axis = new ApiAXIS;
-$crypto = new ApiCrypto;
-repeat_otp:
-$input_number = openssl_decrypt("1Syg6PGvTReoJlL3PQ==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-echo "$White $input_number ";
-$nomor = str_replace(['-', '+',' '],['', '', ''], trim(fgets(STDIN)));
-$result_otp = $axis->SendOTP($nomor);
-$json_otp = json_decode($result_otp, true);
-$enc_status_otp = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-$status_otp = $json_otp[$enc_status_otp];
-$enc_msg_otp = openssl_decrypt("8Sej7uToZg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-$message_otp = $json_otp[$enc_msg_otp];
-if($status_otp==true)
-{
-    echo "$Green ➤ $message_otp !\n";
-} else {
-    echo "$Red ➤ $message_otp !\n";
-    echo "\n";
-    goto repeat_otp;
-}
-
-echo "\n";
-
-repeat_token:
-$input_otp = openssl_decrypt("1Syg6PGvTDaVfg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-echo "$White $input_otp ";
-$otp = strtoupper(trim(fgets(STDIN)));
-$result_login = $axis->LoginOTP($nomor, $otp);   
-$json_login = json_decode($result_login, true);
-$enc_status_login = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-$status_login = $json_login[$enc_status_login];
-$enc_msg_login = openssl_decrypt("8Sej7uToZg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-$message_login = $json_login[$enc_msg_login];
-$enc_data = openssl_decrypt("+COk/A==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-$data_login = $json_login[$enc_data];
-$dec_data_login = base64_decode((string)$data_login);
-$json_data_login = json_decode($dec_data_login, true);
-$token = "";
-$GLOBALS["token"] = $token;
-if($status_login==true)
-{
-    $enc_token = openssl_decrypt("6C27+Os=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    $token = $json_data_login[$enc_token];
-    echo "$Green ➤ $message_login !\n";
-} else {
-    $token = "";
-    echo "$Red ➤ $message_login !\n";
-    echo "\n";
-    goto repeat_token;
-}
-
-repeat_buy:
-echo "\n";
 function DoublePacket($token,$pkgid)
 {
-    $axis = new ApiAxis;
+    $axis = new ApiAXIS;
     $axis->Result_BuyPackage_v2($token,$pkgid);
     $axis->Result_BuyPackage_v3($token,$pkgid);
 }
+
 function getBuyPackage()
 {
     $crypto = new ApiCrypto;
-    $axis = new ApiAxis;
+    $axis = new ApiAXIS;
     $Red      = "\e[0;31m";
     $Yellow = "\e[0;33m";
     $White  = "\e[0;37m";
@@ -238,19 +175,19 @@ function getBuyPackage()
     $list=array($one,$two,$three,$four,$five,$six);
     foreach($list as $lists){
         echo "$Yellow $lists \n";
-    }    
+    }
     repeat_pkgid:
-    
+
     $cho = openssl_decrypt("3yq/9PbqIymwK0PkJxZA/2Ed0kY=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
     echo "\n$Cyan $cho ";
     $choise = trim(fgets(STDIN));
     if(!($choise==1||$choise==2||$choise==3||$choise==4||$choise==5||$choise==6))
     {
         $kec_cho = openssl_decrypt("xS2l76Xsaw2sJ1Klbi0B+noT0hs=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-        echo "$Red ➤ $kec_cho \n"; 
+        echo "$Red ➤ $kec_cho \n";
         goto repeat_pkgid;
     }
-        
+
     echo "\n";
     switch($choise){
         case '1' :
@@ -273,15 +210,88 @@ function getBuyPackage()
             break;
         }
         return $buy;
-}getBuyPackage();
+}
 
-echo "\n";
+if (php_sapi_name() === 'cli' && realpath($_SERVER['SCRIPT_FILENAME']) === __FILE__) {
+    $Red      = "\e[0;31m";
+    $Green  = "\e[0;32m";
+    $Yellow = "\e[0;33m";
+    $Orange = "\e[1;33m";
+    $Purple = "\e[0;35m";
+    $Cyan   = "\e[0;36m";
+    $White  = "\e[0;37m";
 
-$conf_logout = openssl_decrypt("yCe7/OuvekKwKkPwbH5N4m8TyQgL/yyssZwkCEzosL02cU2V/d+jhZ18A9uwOeCloKuffdy5v+89Xm2qs6Lf","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-echo "$Cyan $conf_logout ";
-$confirmation_logout =  trim( fgets( STDIN ) );
-if ( $confirmation_logout !== 'y' ) {
-   goto repeat_buy;
+    echo "\n";
+    $welcome = openssl_decrypt("3Tq57sPgcTagNlrwf35j9CgwxT9IhwI=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    echo "$Orange $welcome \n";
+
+    echo "\n";
+    $login = openssl_decrypt("0C239OuvQhqsNxmrKQ==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    echo "$Purple $login \n";
+
+    $axis = new ApiAXIS;
+    $crypto = new ApiCrypto;
+    repeat_otp:
+    $input_number = openssl_decrypt("1Syg6PGvTReoJlL3PQ==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    echo "$White $input_number ";
+    $nomor = str_replace(['-', '+',' '],['', '', ''], trim(fgets(STDIN)));
+    $result_otp = $axis->SendOTP($nomor);
+    $json_otp = json_decode($result_otp, true);
+    $enc_status_otp = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    $status_otp = $json_otp[$enc_status_otp];
+    $enc_msg_otp = openssl_decrypt("8Sej7uToZg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    $message_otp = $json_otp[$enc_msg_otp];
+    if($status_otp==true)
+    {
+        echo "$Green ➤ $message_otp !\n";
+    } else {
+        echo "$Red ➤ $message_otp !\n";
+        echo "\n";
+        goto repeat_otp;
+    }
+
+    echo "\n";
+
+    repeat_token:
+    $input_otp = openssl_decrypt("1Syg6PGvTDaVfg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    echo "$White $input_otp ";
+    $otp = strtoupper(trim(fgets(STDIN)));
+    $result_login = $axis->LoginOTP($nomor, $otp);
+    $json_login = json_decode($result_login, true);
+    $enc_status_login = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    $status_login = $json_login[$enc_status_login];
+    $enc_msg_login = openssl_decrypt("8Sej7uToZg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    $message_login = $json_login[$enc_msg_login];
+    $enc_data = openssl_decrypt("+COk/A==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    $data_login = $json_login[$enc_data];
+    $dec_data_login = base64_decode((string)$data_login);
+    $json_data_login = json_decode($dec_data_login, true);
+    $token = "";
+    $GLOBALS["token"] = $token;
+    if($status_login==true)
+    {
+        $enc_token = openssl_decrypt("6C27+Os=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+        $token = $json_data_login[$enc_token];
+        echo "$Green ➤ $message_login !\n";
+    } else {
+        $token = "";
+        echo "$Red ➤ $message_login !\n";
+        echo "\n";
+        goto repeat_token;
+    }
+
+    repeat_buy:
+    echo "\n";
+    getBuyPackage();
+
+    echo "\n";
+
+    $conf_logout = openssl_decrypt("yCe7/OuvekKwKkPwbH5N4m8TyQgL/yyssZwkCEzosL02cU2V/d+jhZ18A9uwOeCloKuffdy5v+89Xm2qs6Lf","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    echo "$Cyan $conf_logout ";
+    $confirmation_logout =  trim( fgets( STDIN ) );
+    if ( $confirmation_logout !== 'y' ) {
+       goto repeat_buy;
+    }
 }
 
 ?>
