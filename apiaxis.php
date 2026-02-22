@@ -166,19 +166,18 @@ class ApiAXIS
             echo "$Red ➤ $message_buy_v3 !\n";
         }
     }
-}
 
-function DoublePacket($token,$pkgid)
-{
-    $axis = new ApiAxis;
-    $axis->Result_BuyPackage_v2($token,$pkgid);
-    $axis->Result_BuyPackage_v3($token,$pkgid);
+    function DoublePacket($token,$pkgid)
+    {
+        $this->Result_BuyPackage_v2($token,$pkgid);
+        $this->Result_BuyPackage_v3($token,$pkgid);
+    }
 }
 
 function getBuyPackage()
 {
     $crypto = new ApiCrypto;
-    $axis = new ApiAxis;
+    $axis = new ApiAXIS;
     $Red      = "\e[0;31m";
     $Yellow = "\e[0;33m";
     $White  = "\e[0;37m";
@@ -212,19 +211,19 @@ function getBuyPackage()
     echo "\n";
     switch($choise){
         case '1' :
-            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("-QERCE2V7OsHsaF4ukoLlw=="));
+            $buy = $axis->DoublePacket($GLOBALS["token"],$crypto->decrypt("-QERCE2V7OsHsaF4ukoLlw=="));
             break;
         case '2' :
-            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("_HWiDPCSEaMHsaF4ukoLlw=="));
+            $buy = $axis->DoublePacket($GLOBALS["token"],$crypto->decrypt("_HWiDPCSEaMHsaF4ukoLlw=="));
             break;
         case '3' :
-            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("Syma9QW6JwAHsaF4ukoLlw=="));
+            $buy = $axis->DoublePacket($GLOBALS["token"],$crypto->decrypt("Syma9QW6JwAHsaF4ukoLlw=="));
             break;
         case '4' :
-            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("ALEamI8eFzwHsaF4ukoLlw=="));
+            $buy = $axis->DoublePacket($GLOBALS["token"],$crypto->decrypt("ALEamI8eFzwHsaF4ukoLlw=="));
             break;
         case '5' :
-            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("r4r4DFlay5UHsaF4ukoLlw=="));
+            $buy = $axis->DoublePacket($GLOBALS["token"],$crypto->decrypt("r4r4DFlay5UHsaF4ukoLlw=="));
             break;
         case '6' :
             $buy = $axis->Result_BuyPackage_v2($GLOBALS["token"],$crypto->decrypt("mZ4BlrAuzVQHsaF4ukoLlw=="));
