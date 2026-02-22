@@ -177,35 +177,45 @@ function DoublePacket($token,$pkgid)
 
 function getBuyPackage()
 {
+    static $menu_cache = null;
+
+    if ($menu_cache === null) {
+        $key = base64_decode("bHljb3h6");
+        $iv = base64_decode("MDgwNDIwMDIxNjAxMjAwNA==");
+        $menu_cache = [
+            'daftar' => openssl_decrypt("2CO26eT9IymwK0PkJxZA/2Ed0kY=","AES-128-CTR",$key,0,$iv),
+            'list' => [
+                openssl_decrypt("rWzw1vDgdwPlHVjwcytD6ChN+z4L/0mhqNFqGEk=","AES-128-CTR",$key,0,$iv),
+                openssl_decrypt("rmzw1vDgdwPlHVjwcytD6ChO+z4L/0uhqNFqGEk=","AES-128-CTR",$key,0,$iv),
+                openssl_decrypt("r2zw1vDgdwPlEF7uczFKrTk7/lAH7hC79t16Qw==","AES-128-CTR",$key,0,$iv),
+                openssl_decrypt("qGzw1vDgdwPlDVn2cz9G/2kRnE1gnVTp65U4BAL4rg==","AES-128-CTR",$key,0,$iv),
+                openssl_decrypt("qWzw1vDgdwPlCVbpZjMBvE8+kFwVtwrl+s0h","AES-128-CTR",$key,0,$iv),
+                openssl_decrypt("qmzw1vDgdwPlEF7uczFKrTk7/lAH7EihqNFqGw77rg==","AES-128-CTR",$key,0,$iv)
+            ],
+            'cho' => openssl_decrypt("3yq/9PbqIymwK0PkJxZA/2Ed0kY=","AES-128-CTR",$key,0,$iv),
+            'kec_cho' => openssl_decrypt("xS2l76Xsaw2sJ1Klbi0B+noT0hs=","AES-128-CTR",$key,0,$iv)
+        ];
+    }
+
     $crypto = new ApiCrypto;
     $axis = new ApiAxis;
     $Red      = "\e[0;31m";
     $Yellow = "\e[0;33m";
     $White  = "\e[0;37m";
     $Cyan   = "\e[0;36m";
-    $daftar = openssl_decrypt("2CO26eT9IymwK0PkJxZA/2Ed0kY=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    echo "$Yellow $daftar \n";
 
-    $one   = openssl_decrypt("rWzw1vDgdwPlHVjwcytD6ChN+z4L/0mhqNFqGEk=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    $two   = openssl_decrypt("rmzw1vDgdwPlHVjwcytD6ChO+z4L/0uhqNFqGEk=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    $three = openssl_decrypt("r2zw1vDgdwPlEF7uczFKrTk7/lAH7hC79t16Qw==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    $four  = openssl_decrypt("qGzw1vDgdwPlDVn2cz9G/2kRnE1gnVTp65U4BAL4rg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    $five  = openssl_decrypt("qWzw1vDgdwPlCVbpZjMBvE8+kFwVtwrl+s0h","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    $six   = openssl_decrypt("qmzw1vDgdwPlEF7uczFKrTk7/lAH7EihqNFqGw77rg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    echo "$Yellow {$menu_cache['daftar']} \n";
 
-    $list=array($one,$two,$three,$four,$five,$six);
-    foreach($list as $lists){
+    foreach($menu_cache['list'] as $lists){
         echo "$Yellow $lists \n";
     }
     repeat_pkgid:
 
-    $cho = openssl_decrypt("3yq/9PbqIymwK0PkJxZA/2Ed0kY=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    echo "\n$Cyan $cho ";
+    echo "\n$Cyan {$menu_cache['cho']} ";
     $choise = trim(fgets(STDIN));
     if(!($choise==1||$choise==2||$choise==3||$choise==4||$choise==5||$choise==6))
     {
-        $kec_cho = openssl_decrypt("xS2l76Xsaw2sJ1Klbi0B+noT0hs=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-        echo "$Red ➤ $kec_cho \n";
+        echo "$Red ➤ {$menu_cache['kec_cho']} \n";
         goto repeat_pkgid;
     }
 
