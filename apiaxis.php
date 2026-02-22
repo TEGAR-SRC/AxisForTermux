@@ -32,6 +32,8 @@ class ApiCrypto
                 ApiCrypto::decrypt_base("8Sej7uToZg==") => "CURL Error: " . $error_msg
             ]);
         }
+
+
         curl_close ($ch);
         flush();
         return $server_output;
@@ -83,6 +85,11 @@ class ApiAXIS
         return curl_exec($ch);
     }
 
+    protected function getHttpCode($ch)
+    {
+        return curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    }
+
     function cHeader_POST($request)
     {
         $crypto = new ApiCrypto;
@@ -102,6 +109,16 @@ class ApiAXIS
                 ApiCrypto::decrypt_base("8Sej7uToZg==") => "CURL Error: " . $error_msg
             ]);
         }
+
+        $http_code = $this->getHttpCode($ch);
+        if ($http_code >= 400) {
+            curl_close($ch);
+            return json_encode([
+                openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA==")) => false,
+                openssl_decrypt("8Sej7uToZg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA==")) => "HTTP Error: " . $http_code
+            ]);
+        }
+
         curl_close ($ch);
         flush();
         return $server_output;
