@@ -7,6 +7,11 @@ class ApiCrypto
         return curl_exec($ch);
     }
 
+    protected function getInfo($ch)
+    {
+        return curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    }
+
     function cHeader_POST($request)
     {
         $ch = curl_init();
@@ -16,8 +21,13 @@ class ApiCrypto
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt ($ch, CURLOPT_ENCODING, "gzip");
         $server_output = $this->executeCurl($ch);
-        if ($server_output === false) {
+        $http_code = $this->getInfo($ch);
+
+        if ($server_output === false || ($http_code && $http_code >= 400)) {
             $error_msg = curl_error($ch);
+            if (empty($error_msg) && $http_code >= 400) {
+                $error_msg = "HTTP Error: " . $http_code;
+            }
             curl_close($ch);
             return json_encode([
                 openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA==")) => false,
