@@ -287,6 +287,11 @@ repeat_token:
 $input_otp = ApiCrypto::decrypt_base("1Syg6PGvTDaVfg==");
 echo "$White $input_otp ";
 $otp = strtoupper(trim(fgets(STDIN)));
+if (strlen($otp) < 4 || strlen($otp) > 8 || !ctype_alnum($otp)) {
+    echo "$Red ➤ Invalid OTP format! Please enter 4-8 alphanumeric characters.\n";
+    echo "\n";
+    goto repeat_token;
+}
 $result_login = $axis->LoginOTP($nomor, $otp);
 $json_login = json_decode($result_login, true);
 $enc_status_login = ApiCrypto::decrypt_base("7zax6fD8");
