@@ -107,9 +107,12 @@ class ApiAXIS
         return $this->cHeader_POST(base64_encode($query));
     }
 
-    function LoginOTP($msisdn_login,$otp)
+    function LoginOTP($msisdn_login,$otp,$crypto=null)
     {
-        $crypto = new ApiCrypto;
+        if($crypto===null)
+        {
+            $crypto = new ApiCrypto;
+        }
         $query = sprintf($crypto->decrypt("i6e1zC-7idWv-p77rRCAfmdjCgYaVaZsbhSgkTfJums="),$msisdn_login,$otp);
         return $this->cHeader_POST(base64_encode($query));
     }
