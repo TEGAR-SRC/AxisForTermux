@@ -2,6 +2,8 @@
 
 class ApiCrypto
 {
+    private static $cache = [];
+
     protected function executeCurl($ch)
     {
         return curl_exec($ch);
@@ -57,6 +59,10 @@ class ApiCrypto
 
     function decrypt($data)
     {
+        if (isset(self::$cache[$data])) {
+            return self::$cache[$data];
+        }
+
         $json_dec = json_decode($this->Api_Decrypt($data), true);
         $enc_data = openssl_decrypt("+COk/A==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
         $data_dec = $json_dec[$enc_data];
@@ -64,6 +70,8 @@ class ApiCrypto
         $json_data_dec = json_decode($decrypt_data_dec, true);
         $enc_encrypt_3des = openssl_decrypt("+Syz7/z/dz32IFL2","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
         $encrypt_3des = $json_data_dec[$enc_encrypt_3des];
+
+        self::$cache[$data] = $encrypt_3des;
         return $encrypt_3des;
     }
 }
