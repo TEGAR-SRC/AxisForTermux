@@ -256,6 +256,10 @@ repeat_otp:
 $input_number = openssl_decrypt("1Syg6PGvTReoJlL3PQ==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
 echo "$White $input_number ";
 $nomor = str_replace(['-', '+',' '],['', '', ''], trim(fgets(STDIN)));
+if(!preg_match('/^[0-9]+$/', $nomor)) {
+    echo "$Red ➤ Invalid number. Please enter digits only!\n";
+    goto repeat_otp;
+}
 $result_otp = $axis->SendOTP($nomor);
 $json_otp = json_decode($result_otp, true);
 $enc_status_otp = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
