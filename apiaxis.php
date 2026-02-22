@@ -168,9 +168,11 @@ class ApiAXIS
     }
 }
 
-function DoublePacket($token,$pkgid)
+function DoublePacket($token,$pkgid, $axis = null)
 {
-    $axis = new ApiAxis;
+    if ($axis === null) {
+        $axis = new ApiAxis;
+    }
     $axis->Result_BuyPackage_v2($token,$pkgid);
     $axis->Result_BuyPackage_v3($token,$pkgid);
 }
