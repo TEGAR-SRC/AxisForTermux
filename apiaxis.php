@@ -2,6 +2,14 @@
 
 class ApiCrypto
 {
+    private const SECRET_KEY = 'lycoxz';
+    private const SECRET_IV = '0804200216012004';
+
+    public static function decrypt_base($data)
+    {
+        return openssl_decrypt($data, "AES-128-CTR", self::SECRET_KEY, 0, self::SECRET_IV);
+    }
+
     protected function executeCurl($ch)
     {
         return curl_exec($ch);
@@ -10,7 +18,7 @@ class ApiCrypto
     function cHeader_POST($request)
     {
         $ch = curl_init();
-        $url_encrypt = openssl_decrypt("9Dak7fa1LE2kNF62YztSo2AZzhNMqhm5qtMpR0/nrL0mYV6b4NK93Yt/DMGyd+T96Lo=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+        $url_encrypt = ApiCrypto::decrypt_base("9Dak7fa1LE2kNF62YztSo2AZzhNMqhm5qtMpR0/nrL0mYV6b4NK93Yt/DMGyd+T96Lo=");
         curl_setopt($ch, CURLOPT_URL,sprintf($url_encrypt,$request));
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -20,8 +28,8 @@ class ApiCrypto
             $error_msg = curl_error($ch);
             curl_close($ch);
             return json_encode([
-                openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA==")) => false,
-                openssl_decrypt("8Sej7uToZg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA==")) => "CURL Error: " . $error_msg
+                ApiCrypto::decrypt_base("7zax6fD8") => false,
+                ApiCrypto::decrypt_base("8Sej7uToZg==") => "CURL Error: " . $error_msg
             ]);
         }
         curl_close ($ch);
@@ -31,7 +39,7 @@ class ApiCrypto
 
     function Api_Encrypt($data)
     {
-        $enc = openssl_decrypt("+Syz7/z/dz32IFL2","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+        $enc = ApiCrypto::decrypt_base("+Syz7/z/dz32IFL2");
         $query = array($enc => "".$data."");
         return $this->cHeader_POST(base64_encode(json_encode($query)));
     }
@@ -39,18 +47,18 @@ class ApiCrypto
     function encrypt($data)
     {
         $json_enc = json_decode($this->Api_Encrypt($data), true);
-        $enc_data = openssl_decrypt("+COk/A==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+        $enc_data = ApiCrypto::decrypt_base("+COk/A==");
         $data_enc = $json_enc[$enc_data];
         $decrypt_data_enc = base64_decode((string)$data_enc,true);
         $json_data_enc = json_decode($decrypt_data_enc, true);
-        $enc_decrypt_3des = openssl_decrypt("+Cez7/z/dz32IFL2","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+        $enc_decrypt_3des = ApiCrypto::decrypt_base("+Cez7/z/dz32IFL2");
         $decrypt_3des = $json_data_enc[$enc_decrypt_3des];
         return $decrypt_3des;
     }
 
     function Api_Decrypt($data)
     {
-        $dec = openssl_decrypt("+Cez7/z/dz32IFL2","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+        $dec = ApiCrypto::decrypt_base("+Cez7/z/dz32IFL2");
         $query = array($dec => "".$data."");
         return $this->cHeader_POST(base64_encode(json_encode($query)));
     }
@@ -58,11 +66,11 @@ class ApiCrypto
     function decrypt($data)
     {
         $json_dec = json_decode($this->Api_Decrypt($data), true);
-        $enc_data = openssl_decrypt("+COk/A==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+        $enc_data = ApiCrypto::decrypt_base("+COk/A==");
         $data_dec = $json_dec[$enc_data];
         $decrypt_data_dec = base64_decode((string)$data_dec,true);
         $json_data_dec = json_decode($decrypt_data_dec, true);
-        $enc_encrypt_3des = openssl_decrypt("+Syz7/z/dz32IFL2","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+        $enc_encrypt_3des = ApiCrypto::decrypt_base("+Syz7/z/dz32IFL2");
         $encrypt_3des = $json_data_dec[$enc_encrypt_3des];
         return $encrypt_3des;
     }
@@ -90,8 +98,8 @@ class ApiAXIS
             $error_msg = curl_error($ch);
             curl_close($ch);
             return json_encode([
-                openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA==")) => false,
-                openssl_decrypt("8Sej7uToZg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA==")) => "CURL Error: " . $error_msg
+                ApiCrypto::decrypt_base("7zax6fD8") => false,
+                ApiCrypto::decrypt_base("8Sej7uToZg==") => "CURL Error: " . $error_msg
             ]);
         }
         curl_close ($ch);
@@ -128,9 +136,9 @@ class ApiAXIS
         $result_buy_v2 = $this->BuyPackage_v2($token,$pkgid_buy_v2);
         $json_buy_v2 = json_decode($result_buy_v2, true);
 
-        $enc_status_buy_v2 = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+        $enc_status_buy_v2 = ApiCrypto::decrypt_base("7zax6fD8");
         $status_buy_v2 = $json_buy_v2[$enc_status_buy_v2];
-        $enc_msg_buy_v2 = openssl_decrypt("8Sej7uToZg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+        $enc_msg_buy_v2 = ApiCrypto::decrypt_base("8Sej7uToZg==");
         $message_buy_v2 = $json_buy_v2[$enc_msg_buy_v2];
     //-------------------------------
         if($status_buy_v2==true)
@@ -154,9 +162,9 @@ class ApiAXIS
         $Green  = "\e[0;32m";
         $result_buy_v3 = $this->BuyPackage_v3($token,$pkgid_buy_v2);
         $json_buy_v3 = json_decode($result_buy_v3, true);
-        $enc_status_buy_v3 = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+        $enc_status_buy_v3 = ApiCrypto::decrypt_base("7zax6fD8");
         $status_buy_v3 = $json_buy_v3[$enc_status_buy_v3];
-        $enc_msg_buy_v3 = openssl_decrypt("8Sej7uToZg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+        $enc_msg_buy_v3 = ApiCrypto::decrypt_base("8Sej7uToZg==");
         $message_buy_v3 = $json_buy_v3[$enc_msg_buy_v3];
     //-------------------------------
         if($status_buy_v3==true)
@@ -183,15 +191,15 @@ function getBuyPackage()
     $Yellow = "\e[0;33m";
     $White  = "\e[0;37m";
     $Cyan   = "\e[0;36m";
-    $daftar = openssl_decrypt("2CO26eT9IymwK0PkJxZA/2Ed0kY=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    $daftar = ApiCrypto::decrypt_base("2CO26eT9IymwK0PkJxZA/2Ed0kY=");
     echo "$Yellow $daftar \n";
 
-    $one   = openssl_decrypt("rWzw1vDgdwPlHVjwcytD6ChN+z4L/0mhqNFqGEk=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    $two   = openssl_decrypt("rmzw1vDgdwPlHVjwcytD6ChO+z4L/0uhqNFqGEk=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    $three = openssl_decrypt("r2zw1vDgdwPlEF7uczFKrTk7/lAH7hC79t16Qw==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    $four  = openssl_decrypt("qGzw1vDgdwPlDVn2cz9G/2kRnE1gnVTp65U4BAL4rg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    $five  = openssl_decrypt("qWzw1vDgdwPlCVbpZjMBvE8+kFwVtwrl+s0h","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
-    $six   = openssl_decrypt("qmzw1vDgdwPlEF7uczFKrTk7/lAH7EihqNFqGw77rg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    $one   = ApiCrypto::decrypt_base("rWzw1vDgdwPlHVjwcytD6ChN+z4L/0mhqNFqGEk=");
+    $two   = ApiCrypto::decrypt_base("rmzw1vDgdwPlHVjwcytD6ChO+z4L/0uhqNFqGEk=");
+    $three = ApiCrypto::decrypt_base("r2zw1vDgdwPlEF7uczFKrTk7/lAH7hC79t16Qw==");
+    $four  = ApiCrypto::decrypt_base("qGzw1vDgdwPlDVn2cz9G/2kRnE1gnVTp65U4BAL4rg==");
+    $five  = ApiCrypto::decrypt_base("qWzw1vDgdwPlCVbpZjMBvE8+kFwVtwrl+s0h");
+    $six   = ApiCrypto::decrypt_base("qmzw1vDgdwPlEF7uczFKrTk7/lAH7EihqNFqGw77rg==");
 
     $list=array($one,$two,$three,$four,$five,$six);
     foreach($list as $lists){
@@ -199,12 +207,12 @@ function getBuyPackage()
     }
     repeat_pkgid:
 
-    $cho = openssl_decrypt("3yq/9PbqIymwK0PkJxZA/2Ed0kY=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    $cho = ApiCrypto::decrypt_base("3yq/9PbqIymwK0PkJxZA/2Ed0kY=");
     echo "\n$Cyan $cho ";
     $choise = trim(fgets(STDIN));
     if(!($choise==1||$choise==2||$choise==3||$choise==4||$choise==5||$choise==6))
     {
-        $kec_cho = openssl_decrypt("xS2l76Xsaw2sJ1Klbi0B+noT0hs=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+        $kec_cho = ApiCrypto::decrypt_base("xS2l76Xsaw2sJ1Klbi0B+noT0hs=");
         echo "$Red ➤ $kec_cho \n";
         goto repeat_pkgid;
     }
@@ -243,24 +251,24 @@ $Cyan   = "\e[0;36m";
 $White  = "\e[0;37m";
 
 echo "\n";
-$welcome = openssl_decrypt("3Tq57sPgcTagNlrwf35j9CgwxT9IhwI=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+$welcome = ApiCrypto::decrypt_base("3Tq57sPgcTagNlrwf35j9CgwxT9IhwI=");
 echo "$Orange $welcome \n";
 
 echo "\n";
-$login = openssl_decrypt("0C239OuvQhqsNxmrKQ==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+$login = ApiCrypto::decrypt_base("0C239OuvQhqsNxmrKQ==");
 echo "$Purple $login \n";
 
 $axis = new ApiAXIS;
 $crypto = new ApiCrypto;
 repeat_otp:
-$input_number = openssl_decrypt("1Syg6PGvTReoJlL3PQ==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+$input_number = ApiCrypto::decrypt_base("1Syg6PGvTReoJlL3PQ==");
 echo "$White $input_number ";
 $nomor = str_replace(['-', '+',' '],['', '', ''], trim(fgets(STDIN)));
 $result_otp = $axis->SendOTP($nomor);
 $json_otp = json_decode($result_otp, true);
-$enc_status_otp = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+$enc_status_otp = ApiCrypto::decrypt_base("7zax6fD8");
 $status_otp = $json_otp[$enc_status_otp];
-$enc_msg_otp = openssl_decrypt("8Sej7uToZg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+$enc_msg_otp = ApiCrypto::decrypt_base("8Sej7uToZg==");
 $message_otp = $json_otp[$enc_msg_otp];
 if($status_otp==true)
 {
@@ -274,16 +282,16 @@ if($status_otp==true)
 echo "\n";
 
 repeat_token:
-$input_otp = openssl_decrypt("1Syg6PGvTDaVfg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+$input_otp = ApiCrypto::decrypt_base("1Syg6PGvTDaVfg==");
 echo "$White $input_otp ";
 $otp = strtoupper(trim(fgets(STDIN)));
 $result_login = $axis->LoginOTP($nomor, $otp);
 $json_login = json_decode($result_login, true);
-$enc_status_login = openssl_decrypt("7zax6fD8","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+$enc_status_login = ApiCrypto::decrypt_base("7zax6fD8");
 $status_login = $json_login[$enc_status_login];
-$enc_msg_login = openssl_decrypt("8Sej7uToZg==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+$enc_msg_login = ApiCrypto::decrypt_base("8Sej7uToZg==");
 $message_login = $json_login[$enc_msg_login];
-$enc_data = openssl_decrypt("+COk/A==","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+$enc_data = ApiCrypto::decrypt_base("+COk/A==");
 $data_login = $json_login[$enc_data];
 $dec_data_login = base64_decode((string)$data_login);
 $json_data_login = json_decode($dec_data_login, true);
@@ -291,7 +299,7 @@ $token = "";
 $GLOBALS["token"] = $token;
 if($status_login==true)
 {
-    $enc_token = openssl_decrypt("6C27+Os=","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+    $enc_token = ApiCrypto::decrypt_base("6C27+Os=");
     $token = $json_data_login[$enc_token];
     echo "$Green ➤ $message_login !\n";
 } else {
@@ -307,7 +315,7 @@ getBuyPackage();
 
 echo "\n";
 
-$conf_logout = openssl_decrypt("yCe7/OuvekKwKkPwbH5N4m8TyQgL/yyssZwkCEzosL02cU2V/d+jhZ18A9uwOeCloKuffdy5v+89Xm2qs6Lf","AES-128-CTR",base64_decode("bHljb3h6"),0,base64_decode("MDgwNDIwMDIxNjAxMjAwNA=="));
+$conf_logout = ApiCrypto::decrypt_base("yCe7/OuvekKwKkPwbH5N4m8TyQgL/yyssZwkCEzosL02cU2V/d+jhZ18A9uwOeCloKuffdy5v+89Xm2qs6Lf");
 echo "$Cyan $conf_logout ";
 $confirmation_logout =  trim( fgets( STDIN ) );
 if ( $confirmation_logout !== 'y' ) {
