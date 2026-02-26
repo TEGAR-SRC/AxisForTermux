@@ -125,9 +125,9 @@ class ApiAXIS
 
     }
 
-    function SendOTP($msisdn_otp)
+    function SendOTP($msisdn_otp, $crypto = null)
     {
-        $crypto = new ApiCrypto;
+        $crypto = $crypto ?: new ApiCrypto;
         $query = sprintf($crypto->decrypt("i6e1zC-7idX87EGlntu3L9X_eMfg967OB7GheLpKC5c="),$msisdn_otp);
         return $this->cHeader_POST(base64_encode($query));
     }
