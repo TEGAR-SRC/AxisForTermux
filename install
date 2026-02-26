@@ -16,8 +16,21 @@ pkg install php curl
 echo ""
 cd $HOME/AxisForTermux
 sleep 2
-echo -e $b"➤ "$w" coppying apiaxis: "$g"apiaxis"$w
-cp -rf dor $HOME/
+
+if [ -e "$HOME/dor" ]; then
+    echo -e $b"➤ "$w" File $HOME/dor already exists."
+    read -p "Do you want to overwrite it? (y/n): " choice
+    if [[ "$choice" == "y" || "$choice" == "Y" ]]; then
+        echo -e $b"➤ "$w" coppying apiaxis: "$g"apiaxis"$w
+        cp -rf dor $HOME/
+    else
+        echo -e $b"➤ "$w" Skipping copy."
+    fi
+else
+    echo -e $b"➤ "$w" coppying apiaxis: "$g"apiaxis"$w
+    cp -rf dor $HOME/
+fi
+
 echo ""
 sleep 2
 clear
