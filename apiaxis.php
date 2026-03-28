@@ -283,6 +283,10 @@ repeat_otp:
 $input_number = ApiCrypto::decrypt_base("1Syg6PGvTReoJlL3PQ==");
 echo "$White $input_number ";
 $nomor = str_replace(['-', '+',' '],['', '', ''], trim(fgets(STDIN)));
+if(!preg_match('/^[0-9]+$/', $nomor)) {
+    echo "$Red ➤ Invalid number. Please enter digits only!\n";
+    goto repeat_otp;
+}
 $result_otp = $axis->SendOTP($nomor);
 $json_otp = json_decode($result_otp, true);
 $enc_status_otp = ApiCrypto::decrypt_base("7zax6fD8");
