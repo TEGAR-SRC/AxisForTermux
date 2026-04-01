@@ -202,7 +202,7 @@ function DoublePacket($token,$pkgid, $axis = null)
     $axis->Result_BuyPackage_v3($token,$pkgid);
 }
 
-function getBuyPackage()
+function getBuyPackage($token)
 {
     $crypto = new ApiCrypto;
     $axis = new ApiAxis;
@@ -239,22 +239,22 @@ function getBuyPackage()
     echo "\n";
     switch($choise){
         case '1' :
-            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("-QERCE2V7OsHsaF4ukoLlw=="));
+            $buy = DoublePacket($token,$crypto->decrypt("-QERCE2V7OsHsaF4ukoLlw=="));
             break;
         case '2' :
-            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("_HWiDPCSEaMHsaF4ukoLlw=="));
+            $buy = DoublePacket($token,$crypto->decrypt("_HWiDPCSEaMHsaF4ukoLlw=="));
             break;
         case '3' :
-            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("Syma9QW6JwAHsaF4ukoLlw=="));
+            $buy = DoublePacket($token,$crypto->decrypt("Syma9QW6JwAHsaF4ukoLlw=="));
             break;
         case '4' :
-            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("ALEamI8eFzwHsaF4ukoLlw=="));
+            $buy = DoublePacket($token,$crypto->decrypt("ALEamI8eFzwHsaF4ukoLlw=="));
             break;
         case '5' :
-            $buy = DoublePacket($GLOBALS["token"],$crypto->decrypt("r4r4DFlay5UHsaF4ukoLlw=="));
+            $buy = DoublePacket($token,$crypto->decrypt("r4r4DFlay5UHsaF4ukoLlw=="));
             break;
         case '6' :
-            $buy = $axis->Result_BuyPackage_v2($GLOBALS["token"],$crypto->decrypt("mZ4BlrAuzVQHsaF4ukoLlw=="));
+            $buy = $axis->Result_BuyPackage_v2($token,$crypto->decrypt("mZ4BlrAuzVQHsaF4ukoLlw=="));
             break;
         }
         return $buy;
@@ -320,7 +320,6 @@ $data_login = $json_login[$enc_data];
 $dec_data_login = base64_decode((string)$data_login);
 $json_data_login = json_decode($dec_data_login, true);
 $token = "";
-$GLOBALS["token"] = $token;
 if($status_login==true)
 {
     $enc_token = ApiCrypto::decrypt_base("6C27+Os=");
@@ -335,7 +334,7 @@ if($status_login==true)
 
 repeat_buy:
 echo "\n";
-getBuyPackage();
+getBuyPackage($token);
 
 echo "\n";
 
